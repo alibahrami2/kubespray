@@ -1,101 +1,89 @@
----
-## Global Offline settings
-### Private Container Image Registry
-# registry_host: "myprivateregisry.com"
-# files_repo: "http://myprivatehttpd"
-### If using CentOS, RedHat, AlmaLinux or Fedora
-# yum_repo: "http://myinternalyumrepo"
-### If using Debian
-# debian_repo: "http://myinternaldebianrepo"
-### If using Ubuntu
-# ubuntu_repo: "http://myinternalubunturepo"
+#
+# offline.yml sample
+#
 
-## Container Registry overrides
-# kube_image_repo: "{{ registry_host }}"
-# gcr_image_repo: "{{ registry_host }}"
-# github_image_repo: "{{ registry_host }}"
-# docker_image_repo: "{{ registry_host }}"
-# quay_image_repo: "{{ registry_host }}"
+http_server: "http://kube.aradarpanet.ir"
+registry_host: "kube.aradarpanet.ir"
 
-## Kubernetes components
-# kubeadm_download_url: "{{ files_repo }}/dl.k8s.io/release/v{{ kube_version }}/bin/linux/{{ image_arch }}/kubeadm"
-# kubectl_download_url: "{{ files_repo }}/dl.k8s.io/release/v{{ kube_version }}/bin/linux/{{ image_arch }}/kubectl"
-# kubelet_download_url: "{{ files_repo }}/dl.k8s.io/release/v{{ kube_version }}/bin/linux/{{ image_arch }}/kubelet"
+kube_version: "v1.37.2"
+pod_infra_version: "3.10"
+coredns_version: "1.12.0"
+etcd_version: "3.5.16"
+etcd_image_tag: "3.5.16-0"
 
+# Insecure registries for containerd
+containerd_registries_mirrors:
+  - prefix: "{{ registry_host }}"
+    mirrors:
+      - host: "http://{{ registry_host }}"
+        capabilities: ["pull", "resolve"]
+        skip_verify: true
 
-## Two options - Override entire repository or override only a single binary.
+files_repo: "{{ http_server }}/files"
+yum_repo: "{{ http_server }}/rpms"
+ubuntu_repo: "{{ http_server }}/debs"
 
-## [Optional] 1 - Override entire binary repository
-# github_url: "https://my_github_proxy"
-# dl_k8s_io_url: "https://my_dl_k8s_io_proxy"
-# storage_googleapis_url: "https://my_storage_googleapi_proxy"
-# get_helm_url: "https://my_helm_sh_proxy"
+# Registry overrides
+kube_image_repo: "{{ registry_host }}"
+gcr_image_repo: "{{ registry_host }}"
+docker_image_repo: "{{ registry_host }}"
+quay_image_repo: "{{ registry_host }}"
+github_image_repo: "{{ registry_host }}"
 
-## [Optional] 2 - Override a specific binary
-## CNI Plugins
-# cni_download_url: "{{ files_repo }}/github.com/containernetworking/plugins/releases/download/v{{ cni_version }}/cni-plugins-linux-{{ image_arch }}-v{{ cni_version }}.tgz"
+local_path_provisioner_helper_image_repo: "{{ registry_host }}/busybox"
 
-## cri-tools
-# crictl_download_url: "{{ files_repo }}/github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_version }}/crictl-v{{ crictl_version }}-{{ ansible_system | lower }}-{{ image_arch }}.tar.gz"
+# Download URLs: See roles/download/defaults/main.yml of kubespray.
+kubeadm_download_url: "{{ files_repo }}/kubernetes/v{{ kube_version }}/kubeadm"
+kubectl_download_url: "{{ files_repo }}/kubernetes/v{{ kube_version }}/kubectl"
+kubelet_download_url: "{{ files_repo }}/kubernetes/v{{ kube_version }}/kubelet"
 
-## [Optional] etcd: only if you use etcd_deployment=host
-# etcd_download_url: "{{ files_repo }}/github.com/etcd-io/etcd/releases/download/v{{ etcd_version }}/etcd-v{{ etcd_version }}-linux-{{ image_arch }}.tar.gz"
+# etcd is optional if you **DON'T** use etcd_deployment=host
+etcd_download_url: "{{ files_repo }}/kubernetes/etcd/etcd-v{{ etcd_version }}-linux-amd64.tar.gz"
 
-# [Optional] Calico: If using Calico network plugin
-# calicoctl_download_url: "{{ files_repo }}/github.com/projectcalico/calico/releases/download/v{{ calico_ctl_version }}/calicoctl-linux-{{ image_arch }}"
-# [Optional] Calico with kdd: If using Calico network plugin with kdd datastore
-# calico_crds_download_url: "{{ files_repo }}/github.com/projectcalico/calico/raw/v{{ calico_version }}/manifests/crds.yaml"
+# CNI plugins
+cni_download_url: "{{ files_repo }}/kubernetes/cni/cni-plugins-linux-{{ image_arch }}-v{{ cni_version }}.tgz"
+# cri-tools
+crictl_download_url: "{{ files_repo }}/kubernetes/cri-tools/crictl-v{{ crictl_version }}-{{ ansible_system | lower }}-{{ image_arch }}.tar.gz"
 
-# [Optional] Cilium: If using Cilium network plugin
-# ciliumcli_download_url: "{{ files_repo }}/github.com/cilium/cilium-cli/releases/download/v{{ cilium_cli_version }}/cilium-linux-{{ image_arch }}.tar.gz"
+# If using Calico
+calicoctl_download_url: "{{ files_repo }}/kubernetes/calico/v{{ calico_ctl_version }}/calicoctl-linux-{{ image_arch }}"
+# If using Calico with kdd
+calico_crds_download_url: "{{ files_repo }}/kubernetes/calico/crds.yaml"
 
-# [Optional] helm: only if you set helm_enabled: true
-# helm_download_url: "{{ files_repo }}/get.helm.sh/helm-v{{ helm_version }}-linux-{{ image_arch }}.tar.gz"
+# If using cilium
+ciliumcli_download_url: "{{ files_repo }}/cilium-cli/v{{ cilium_cli_version }}/cilium-linux-{{ image_arch }}.tar.gz"
 
-# [Optional] crun: only if you set crun_enabled: true
-# crun_download_url: "{{ files_repo }}/github.com/containers/crun/releases/download/{{ crun_version }}/crun-{{ crun_version }}-linux-{{ image_arch }}"
+# helm
+helm_download_url: "{{ files_repo }}/helm-v{{ helm_version }}-linux-{{ image_arch }}.tar.gz"
 
-# [Optional] kata: only if you set kata_containers_enabled: true
-# kata_containers_download_url: "{{ files_repo }}/github.com/kata-containers/kata-containers/releases/download/{{ kata_containers_version }}/kata-static-{{ kata_containers_version }}-{{ image_arch }}.tar.xz"
+# crun
+crun_download_url: "{{ files_repo }}/crun-{{ crun_version }}-linux-{{ image_arch }}"
 
-# [Optional] cri-dockerd: only if you set container_manager: docker
-# cri_dockerd_download_url: "{{ files_repo }}/github.com/Mirantis/cri-dockerd/releases/download/v{{ cri_dockerd_version }}/cri-dockerd-{{ cri_dockerd_version }}.{{ image_arch }}.tgz"
+# kata
+kata_containers_download_url: "{{ files_repo }}/kata-static-{{ kata_containers_version }}-{{ image_arch }}.tar.xz"
 
-# [Optional] runc: if you set container_manager to containerd or crio
-# runc_download_url: "{{ files_repo }}/github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.{{ image_arch }}"
+# Containerd
+runc_download_url: "{{ files_repo }}/runc/v{{ runc_version }}/runc.{{ image_arch }}"
+nerdctl_download_url: "{{ files_repo }}/nerdctl-{{ nerdctl_version }}-{{ ansible_system | lower }}-{{ image_arch }}.tar.gz"
+containerd_download_url: "{{ files_repo }}/containerd-{{ containerd_version }}-linux-{{ image_arch }}.tar.gz"
 
-# [Optional] cri-o: only if you set container_manager: crio
-# crio_download_url: "{{ files_repo }}/storage.googleapis.com/cri-o/artifacts/cri-o.{{ image_arch }}.v{{ crio_version }}.tar.gz"
-# skopeo_download_url: "{{ files_repo }}/github.com/lework/skopeo-binary/releases/download/v{{ skopeo_version }}/skopeo-linux-{{ image_arch }}"
+# cri-o
+crio_download_url: "{{ files_repo }}/cri-o.{{ image_arch }}.v{{ crio_version }}.tar.gz"
+skopeo_download_url: "{{ files_repo }}/skopeo/v{{ skopeo_version }}/skopeo-linux-{{ image_arch }}"
 
-# [Optional] containerd: only if you set container_runtime: containerd
-# containerd_download_url: "{{ files_repo }}/github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ 'static-' if containerd_static_binary }}{{ containerd_version }}-linux-{{ image_arch }}.tar.gz"
-# nerdctl_download_url: "{{ files_repo }}/github.com/containerd/nerdctl/releases/download/v{{ nerdctl_version }}/nerdctl-{{ nerdctl_version }}-{{ ansible_system | lower }}-{{ image_arch }}.tar.gz"
+# gvisor
+gvisor_runsc_download_url: "{{ files_repo }}/gvisor/{{ gvisor_version }}/{{ ansible_architecture }}/runsc"
+gvisor_containerd_shim_runsc_download_url: "{{ files_repo }}/gvisor/{{ gvisor_version }}/{{ ansible_architecture }}/containerd-shim-runsc-v1"
 
-# [Optional] runsc,containerd-shim-runsc: only if you set gvisor_enabled: true
-# gvisor_runsc_download_url: "{{ files_repo }}/storage.googleapis.com/gvisor/releases/release/{{ gvisor_version }}/{{ ansible_architecture }}/runsc"
-# gvisor_containerd_shim_runsc_download_url: "{{ files_repo }}/storage.googleapis.com/gvisor/releases/release/{{ gvisor_version }}/{{ ansible_architecture }}/containerd-shim-runsc-v1"
+# others
+youki_download_url: "{{ files_repo }}/youki-{{ youki_version }}-{{ ansible_architecture }}-gnu.tar.gz"
+yq_download_url: "{{ files_repo }}/yq/v{{ yq_version }}/yq_linux_{{ image_arch }}"
 
+# cri-dockerd: only if you set container_manager: docker
+cri_dockerd_download_url: "{{ files_repo }}/cri-dockerd-{{ cri_dockerd_version }}.{{ image_arch }}.tgz"
 
-## CentOS/Redhat/AlmaLinux
-### For EL8, baseos and appstream must be available,
-### By default we enable those repo automatically
-# rhel_enable_repos: false
-### Docker / Containerd
-# docker_rh_repo_base_url: "{{ yum_repo }}/docker-ce/$releasever/$basearch"
-# docker_rh_repo_gpgkey: "{{ yum_repo }}/docker-ce/gpg"
+# gateway-api CRDs
+gateway_api_crds_download_url: "{{ files_repo }}/standard-install.yaml"
 
-## Fedora
-### Docker
-# docker_fedora_repo_base_url: "{{ yum_repo }}/docker-ce/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}"
-# docker_fedora_repo_gpgkey: "{{ yum_repo }}/docker-ce/gpg"
-
-## Debian
-### Docker
-# docker_debian_repo_base_url: "{{ debian_repo }}/docker-ce"
-# docker_debian_repo_gpgkey: "{{ debian_repo }}/docker-ce/gpg"
-
-## Ubuntu
-### Docker
-# docker_ubuntu_repo_base_url: "{{ ubuntu_repo }}/docker-ce"
-# docker_ubuntu_repo_gpgkey: "{{ ubuntu_repo }}/docker-ce/gpg"
+# prometheus-operator CRDs
+prometheus_operator_crds_download_url: "{{ files_repo }}/stripped-down-crds.yaml"
