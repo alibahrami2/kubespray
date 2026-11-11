@@ -5,7 +5,7 @@
 http_server: "http://kube.aradarpanet.ir"
 registry_host: "kube.aradarpanet.ir"
 
-kube_version: "v1.37.2"
+kube_version: "1.37.2"
 pod_infra_version: "3.10"
 coredns_version: "1.12.0"
 etcd_version: "3.5.16"
