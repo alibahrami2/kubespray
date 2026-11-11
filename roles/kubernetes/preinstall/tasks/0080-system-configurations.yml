@@ -171,3 +171,26 @@
     state: stopped
     enabled: false
   when: disable_fapolicyd
+
+- name: Load xt_udp kernel module
+  community.general.modprobe:
+    name: xt_udp
+    state: present
+
+- name: Load xt_comment kernel module
+  community.general.modprobe:
+    name: xt_comment
+    state: present
+
+- name: Persist xt_udp and xt_comment modules across reboots
+  copy:
+    dest: /etc/modules-load.d/xt_modules.conf
+    content: |
+      # Managed by Ansible - required for Cilium iptables rules
+      xt_udp
+      xt_comment
+    owner: root
+    group: root
+    mode: '0644'
+  when: ansible_os_family != "Flatcar"
+
