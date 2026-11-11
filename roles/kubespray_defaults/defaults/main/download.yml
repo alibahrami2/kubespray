@@ -134,6 +134,7 @@ crio_version: "{{ (crio_archive_checksums['amd64'].keys() | select('version', ku
 
 # Scheduler plugins doesn't build for K8s 1.29 yet
 scheduler_plugins_supported_versions:
+  '1.37': 0
   '1.31': 0
   '1.30': 0
   '1.29': 0
@@ -266,7 +267,7 @@ haproxy_image_tag: 3.2.19-alpine
 # bundle with kubeadm; if not 'basic' upgrade can sometimes fail
 
 coredns_supported_versions:
-  '1.37': 1.14.6
+  '1.37': 1.12.0
   '1.36': 1.14.2
   '1.35': 1.12.4
 coredns_version: "{{ coredns_supported_versions[kube_major_version] }}"
@@ -322,7 +323,7 @@ csi_livenessprobe_image_repo: "{{ kube_image_repo }}/sig-storage/livenessprobe"
 csi_livenessprobe_image_tag: "v2.11.0"
 
 snapshot_controller_supported_versions:
-  '1.37': "v8.6.0"
+  '1.37': "v7.0.2"
   '1.36': "v8.6.0"
   '1.35': "v8.6.0"
 snapshot_controller_image_repo: "{{ kube_image_repo }}/sig-storage/snapshot-controller"
