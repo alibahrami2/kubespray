@@ -34,7 +34,7 @@
 
 - name: Copy runc binary from download dir
   copy:
-    src: "{{ downloads_file.runc.dest }}"
+    src: "{{ local_release_dir }}/runc-{{ runc_version }}.{{ image_arch }}"
     dest: "{{ runc_bin_dir }}/runc"
     mode: "0755"
     remote_src: true
