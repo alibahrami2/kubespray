@@ -30,7 +30,7 @@
 - name: Runc | Download runc binary
   include_tasks: "../../../download/tasks/download_file.yml"
   vars:
-    download: "{{ download_defaults | combine(downloads_file.runc) }}"
+    download: "{{ download_defaults | combine(downloads_file.runc) | combine({'dest': local_release_dir + '/runc-' + runc_version + '.' + image_arch}) }}"
 
 - name: Copy runc binary from download dir
   copy:
